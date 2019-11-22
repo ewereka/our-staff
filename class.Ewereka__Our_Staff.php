@@ -184,38 +184,31 @@ class Safe_Sound_Customizations {
 			$args[self::$division_taxonomy_name] = $division;
 		}
 
-		$clients_query = new WP_Query();
-		$clients_query->query($args);
+		$team_query = new WP_Query();
+		$team_query->query($args);
 
 		// output -----
+    $output = '';
 
-		$output  = '<ul class="clients-text clearfix">';
-
-			if ($clients_query->have_posts()) {
+			if ($team_query->have_posts()) {
 				$i = 1;
 				$width = round((100 / $in_row), 3);
 
-				while ($clients_query->have_posts()) {
-					$clients_query->the_post();
+        $output .= '<ul class="ewereka-our-staff">'.PHP_EOL;
 
-					$output .= '<li style="width:'. esc_attr($width) .'%">';
-							if ($link) {
-								$output .= '<a target="_blank" href="'. esc_url($link) .'" title="'. the_title(false, false, false) .'">';
-							}
-								$output .= the_title(false, false, false);
-							if ($link) {
-								$output .= '</a>';
-							}
-					$output .= '</li>';
+				while ($team_query->have_posts()) {
+					$team_query->the_post();
+
+					$output .= '<li style="width:'. esc_attr($width) .'%">'.PHP_EOL;
+							$output .= '<p class="name">' . the_title(false, false, false) . '</p>'.PHP_EOL;
+					$output .= '</li>'.PHP_EOL;
 
 					$i++;
 				}
+        $output .= '</ul>'.PHP_EOL;
 			}
 
 			wp_reset_query();
-
-		$output .= '</ul>'."\n";
-
 		return $output;
 	}
 

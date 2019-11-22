@@ -25,6 +25,6 @@ define( "EWEREKA__OUR_STAFF__PLUGIN_DIR", plugin_dir_path( __FILE__ ) );
 require_once( EWEREKA__OUR_STAFF__PLUGIN_DIR . "class.Ewereka__Our_Staff.php" );
 
 add_action( "init", array( "Ewereka__Our_Staff", "init" ) );
-add_action('admin_menu', array('Ewereka__Our_Staff', 'add_team_meta');
-add_action('save_post', array('Ewereka__Our_Staff', 'save_team_meta');
-add_action('vc_before_init', array('Ewereka__Our_Staff', 'integrate_with_vc', 20);
+add_action('admin_menu', array('Ewereka__Our_Staff', 'add_team_meta') );
+add_action('save_post', array('Ewereka__Our_Staff', 'save_team_meta') );
+add_action('vc_before_init', array('Ewereka__Our_Staff', 'integrate_with_vc'), 20);
