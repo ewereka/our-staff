@@ -1,10 +1,12 @@
 <?php
 
-class Safe_Sound_Customizations {
+class Ewereka__Our_Staff {
     private static $initiated = FALSE;
     private static $team_type_name = "team_member";
     private static $location_taxonomy_name = "location";
     private static $division_taxonomy_name = "division";
+    private static $locations = NULL;
+    private static $divisions = NULL;
 
     private static $team_meta_box = array(
         'id' => 'ewereka-our-staff-meta',
@@ -52,26 +54,26 @@ class Safe_Sound_Customizations {
     private static function architecture_customizations() {
         global $wp_rewrite;
 
-        $team_type_name =			self::$team_type_name;
+        $team_type_name =			static::$team_type_name;
         $team_type_labels =			array(
-            "name"					=> _x( "Team Members", "post type general name", "cstone-cust" ),
-            "singular_name"			=> _x( "Team Member", "post type singular name", "cstone-cust" ),
-            "menu_name"				=> _x( "Team Members", "admin menu", "cstone-cust" ),
-            "name_admin_bar"		=> _x( "Team Members", "add new on admin bar", "cstone-cust" ),
-            "add_new"				=> _x( "Add Team Member", "team", "cstone-cust" ),
-            "add_new_item"			=> __( "Add Team Member", "cstone-cust" ),
-            "new_item"				=> __( "New Team Member", "cstone-cust" ),
-            "edit_item"				=> __( "Edit Team Member", "cstone-cust" ),
-            "view_item"				=> __( "View Team Member", "cstone-cust" ),
-            "all_items"				=> __( "All Team Members", "cstone-cust" ),
-            "search_items"			=> __( "Search Team Members", "cstone-cust" ),
-            "parent_item_colon"		=> __( "Parent Team Member:", "cstone-cust" ),
-            "not_found"				=> __( "No team members found.", "cstone-cust" ),
-            "not_found_in_trash"	=> __( "No team members found in trash.", "cstone-cust" ),
-            "featured_image"		=> __( "Photo", "cstone-cust" ),
-            "set_featured_image"	=> __( "Set Photo", "cstone-cust" ),
-            "remove_featured_image"	=> __( "Remove Photo", "cstone-cust" ),
-            "use_featured_image"	=> __( "Use as Photo", "cstone-cust" ),
+            "name"					=> _x( "Team Members", "post type general name", "com.ewereka.our-staff" ),
+            "singular_name"			=> _x( "Team Member", "post type singular name", "com.ewereka.our-staff" ),
+            "menu_name"				=> _x( "Team Members", "admin menu", "com.ewereka.our-staff" ),
+            "name_admin_bar"		=> _x( "Team Members", "add new on admin bar", "com.ewereka.our-staff" ),
+            "add_new"				=> _x( "Add Team Member", "team", "com.ewereka.our-staff" ),
+            "add_new_item"			=> __( "Add Team Member", "com.ewereka.our-staff" ),
+            "new_item"				=> __( "New Team Member", "com.ewereka.our-staff" ),
+            "edit_item"				=> __( "Edit Team Member", "com.ewereka.our-staff" ),
+            "view_item"				=> __( "View Team Member", "com.ewereka.our-staff" ),
+            "all_items"				=> __( "All Team Members", "com.ewereka.our-staff" ),
+            "search_items"			=> __( "Search Team Members", "com.ewereka.our-staff" ),
+            "parent_item_colon"		=> __( "Parent Team Member:", "com.ewereka.our-staff" ),
+            "not_found"				=> __( "No team members found.", "com.ewereka.our-staff" ),
+            "not_found_in_trash"	=> __( "No team members found in trash.", "com.ewereka.our-staff" ),
+            "featured_image"		=> __( "Photo", "com.ewereka.our-staff" ),
+            "set_featured_image"	=> __( "Set Photo", "com.ewereka.our-staff" ),
+            "remove_featured_image"	=> __( "Remove Photo", "com.ewereka.our-staff" ),
+            "use_featured_image"	=> __( "Use as Photo", "com.ewereka.our-staff" ),
         );
         $team_type_args =			array(
             "labels"				=> $team_type_labels,
@@ -113,7 +115,7 @@ class Safe_Sound_Customizations {
             "show_ui"           => true,
             "show_admin_column" => true,
             "query_var"         => true,
-            "rewrite"           => array( "slug" => self::$location_taxonomy_name ),
+            "rewrite"           => array( "slug" => static::$location_taxonomy_name ),
         );
 
         $division_taxonomy_labels   = array(
@@ -136,14 +138,17 @@ class Safe_Sound_Customizations {
             "show_ui"           => true,
             "show_admin_column" => true,
             "query_var"         => true,
-            "rewrite"           => array( "slug" => self::$division_taxonomy_name ),
+            "rewrite"           => array( "slug" => static::$division_taxonomy_name ),
         );
 
 
         register_post_type( $team_type_name, $team_type_args );
 
-        register_taxonomy( self::$location_taxonomy_name, array( self::$team_type_name ), $location_taxonomy_args );
-        register_taxonomy( self::$division_taxonomy_name, array( self::$team_type_name ), $division_taxonomy_args );
+        register_taxonomy( static::$location_taxonomy_name, array( static::$team_type_name ), $location_taxonomy_args );
+        register_taxonomy( static::$division_taxonomy_name, array( static::$team_type_name ), $division_taxonomy_args );
+
+        self::$locations = static::build_taxonomy_array($location_taxonomy_name);
+        self::$divisions = static::build_taxonomy_array($division_taxonomy_name);
 
         static::add_shortcodes();
 
@@ -152,90 +157,90 @@ class Safe_Sound_Customizations {
     }
 
     private static function add_shortcodes() {
-        add_shortcode('our_staff', 'sc_clients_text');
+        add_shortcode('our_staff', 'sc_our_staff');
     }
 
-    public static function sc_clients_text($attr, $content = null) {
-		extract(shortcode_atts(array(
-			'in_row'     => 4,
-			'location'   => '',
-			'division'   => '',
-			'orderby'    => 'menu_order',
-			'order'      => 'ASC',
-		), $attr));
+    public static function sc_our_staff($attr, $content = null) {
+        extract(shortcode_atts(array(
+            'in_row'     => 4,
+            'location'   => '',
+            'division'   => '',
+            'orderby'    => 'menu_order',
+            'order'      => 'ASC',
+        ), $attr));
 
-		if (! intval($in_row, 10)) {
-			$in_row = 4;
-		}
+        if (! intval($in_row, 10)) {
+            $in_row = 4;
+        }
 
-		// query args
+        // query args
 
-		$args = array(
-			'post_type'      => self::$team_type_name,
-			'posts_per_page' => -1,
-			'orderby'        => $orderby,
-			'order'          => $order,
-		);
+        $args = array(
+            'post_type'      => static::$team_type_name,
+            'posts_per_page' => -1,
+            'orderby'        => $orderby,
+            'order'          => $order,
+        );
 
-		if ($location) {
-			$args[self::$location_taxonomy_args] = $location;
-		}
+        if ($location) {
+            $args[static::$location_taxonomy_name] = $location;
+        }
         if ($division) {
-			$args[self::$division_taxonomy_name] = $division;
-		}
+            $args[static::$division_taxonomy_name] = $division;
+        }
 
-		$team_query = new WP_Query();
-		$team_query->query($args);
+        $team_query = new WP_Query();
+        $team_query->query($args);
 
-		// output -----
-    $output = '';
+        // output -----
+        $output = '';
 
-			if ($team_query->have_posts()) {
-				$i = 1;
-				$width = round((100 / $in_row), 3);
+        if ($team_query->have_posts()) {
+            $i = 1;
+            $width = round((100 / $in_row), 3);
 
-        $output .= '<ul class="ewereka-our-staff">'.PHP_EOL;
+            $output .= '<ul class="ewereka-our-staff">'.PHP_EOL;
 
-				while ($team_query->have_posts()) {
-					$team_query->the_post();
+            while ($team_query->have_posts()) {
+                $team_query->the_post();
 
-					$output .= '<li style="width:'. esc_attr($width) .'%">'.PHP_EOL;
-							$output .= '<p class="name">' . the_title(false, false, false) . '</p>'.PHP_EOL;
-					$output .= '</li>'.PHP_EOL;
+                $output .= '<li style="width:'. esc_attr($width) .'%">'.PHP_EOL;
+                $output .= '<p class="name">' . the_title(false, false, false) . '</p>'.PHP_EOL;
+                $output .= '</li>'.PHP_EOL;
 
-					$i++;
-				}
-        $output .= '</ul>'.PHP_EOL;
-			}
+                $i++;
+            }
+            $output .= '</ul>'.PHP_EOL;
+        }
 
-			wp_reset_query();
-		return $output;
-	}
+        wp_reset_query();
+        return $output;
+    }
 
 
     //Helper Methods
     private static function build_taxonomy_array($taxonomy_name) {
         $tax_array = array();
-		$terms = get_categories(array('taxonomy' => $taxonomy_name,));
-		foreach( $terms as $term ) {
-			$tax_array[$term->name] = $term->term_id;
-		}
+        $terms = get_terms( array( 'taxonomy' => $taxonomy_name, 'hide_empty' => false ) );
+        foreach( $terms as $term ) {
+            $tax_array[$term->slug] = $term->name;
+        }
 
         return $tax_array;
     }
 
     //Action Methods
     public static function add_team_meta() {
-        $team_meta_box = self::$team_meta_box;
-        add_meta_box($team_meta_box['id'], $team_meta_box['title'], 'show_team_meta', $team_meta_box['page'], $team_meta_box['context'], $team_meta_box['priority']);
+        $team_meta_box = static::$team_meta_box;
+        add_meta_box($team_meta_box['id'], $team_meta_box['title'], array('Ewereka__Our_Staff', 'show_team_meta'), $team_meta_box['page'], $team_meta_box['context'], $team_meta_box['priority']);
     }
 
     public static function show_team_meta() {
         global $post;
 
-        $team_meta_box = self::$team_meta_box;
+        $team_meta_box = static::$team_meta_box;
         // Use nonce for verification
-        echo '<input type="hidden" name="ewereka_team_meta_nonce" value="', wp_create_nonce(basename(__FILE__)), '" />';
+        echo '<input type="hidden" name="ewereka_our_staff_nonce" value="', wp_create_nonce(basename(__FILE__)), '" />';
         echo '<table class="form-table">';
         foreach ($team_meta_box['fields'] as $field) {
             // get current post meta data
@@ -273,7 +278,7 @@ class Safe_Sound_Customizations {
     }
 
     public static function save_team_meta($post_id) {
-        $team_meta_box = self::$team_meta_box;
+        $team_meta_box = static::$team_meta_box;
         // verify nonce
         if (!wp_verify_nonce($_POST['ewereka_our_staff_nonce'], basename(__FILE__))) {
             return $post_id;
@@ -302,75 +307,74 @@ class Safe_Sound_Customizations {
     }
 
     public static function integrate_with_vc() {
-		$locations = static::build_taxonomy_array('location');
-        $divisions = static::build_taxonomy_array('division');
+        $locations = self::$locations;
+        $divisions = self::$divisions;
 
-
-		vc_map(array(
-			'base' 			=> 'our_staff',
-			'name' 			=> __('Our Staff', 'com.ewereka.our-staff'),
-			'description' 	=> __('Recommended column size: 1/1', 'com.ewereka.our-staff'),
-			'category' 		=> __('Ewereka', 'com.ewereka.our-staff'),
-			'icon' 			=> 'vc-icon-staff',
-			'params' 		=> array(
-
-				array(
-					'param_name' 	=> 'in_row',
-					'type' 			=> 'dropdown',
-					'heading' 		=> __('Items in Row', 'com.ewereka.our-staff'),
-					'desc' 			=> __('Number of items in row.'),
-					'admin_label'	=> true,
-					'value'			=> array_flip(array(
-						'1'			=> '1',
-						'2'			=> '2',
-						'3' 		=> '3',
-						'4' 		=> '4',
-					)),
-					'std'			=> '4'
-				),
-
-				array(
-					'param_name' 	=> 'location',
-					'type' 			=> 'dropdown',
-					'heading' 		=> __('Location', 'com.ewereka.our-staff'),
-					'desc' 			=> __('Select the location to use', 'com.ewereka.our-staff'),
-					'admin_label'	=> true,
-                    'value'         => array_flip($locations)
-				),
+        vc_map(array(
+            'base' 			=> 'our_staff',
+            'name' 			=> __('Our Staff', 'com.ewereka.our-staff'),
+            'description' 	=> __('Recommended column size: 1/1', 'com.ewereka.our-staff'),
+            'category' 		=> __('Ewereka', 'com.ewereka.our-staff'),
+            'icon' 			=> 'vc-icon-staff',
+            'params' 		=> array(
 
                 array(
-					'param_name' 	=> 'division',
-					'type' 			=> 'dropdown',
-					'heading' 		=> __('Division', 'com.ewereka.our-staff'),
-					'desc' 			=> __('Select the division to use', 'com.ewereka.our-staff'),
-					'admin_label'	=> true,
+                    'param_name' 	=> 'in_row',
+                    'type' 			=> 'dropdown',
+                    'heading' 		=> __('Items in Row', 'com.ewereka.our-staff'),
+                    'desc' 			=> __('Number of items in row.'),
+                    'admin_label'	=> true,
+                    'value'			=> array_flip(array(
+                        '1'			=> '1',
+                        '2'			=> '2',
+                        '3' 		=> '3',
+                        '4' 		=> '4',
+                    )),
+                    'std'			=> '4'
+                ),
+
+                array(
+                    'param_name' 	=> 'location',
+                    'type' 			=> 'dropdown',
+                    'heading' 		=> __('Location', 'com.ewereka.our-staff'),
+                    'desc' 			=> __('Select the location to use', 'com.ewereka.our-staff'),
+                    'admin_label'	=> true,
+                    'value'         => array_flip($locations)
+                ),
+
+                array(
+                    'param_name' 	=> 'division',
+                    'type' 			=> 'dropdown',
+                    'heading' 		=> __('Division', 'com.ewereka.our-staff'),
+                    'desc' 			=> __(print_r($divisions, true), 'com.ewereka.our-staff'),
+                    'admin_label'	=> true,
                     'value'         => array_flip($divisions)
-				),
+                ),
 
-				array(
-					'param_name' 	=> 'orderby',
-					'type' 			=> 'dropdown',
-					'heading' 		=> __('Order by', 'com.ewereka.our-staff'),
-					'admin_label'	=> false,
-					'value'			=> array_flip(array(
-						'date'			=> 'Date',
-						'menu_order' 	=> 'Menu order',
-						'title'			=> 'Title',
-						'rand'			=> 'Random',
-					)),
-				),
+                array(
+                    'param_name' 	=> 'orderby',
+                    'type' 			=> 'dropdown',
+                    'heading' 		=> __('Order by', 'com.ewereka.our-staff'),
+                    'admin_label'	=> false,
+                    'value'			=> array_flip(array(
+                        'date'			=> 'Date',
+                        'menu_order' 	=> 'Menu order',
+                        'title'			=> 'Title',
+                        'rand'			=> 'Random',
+                    )),
+                ),
 
-				array(
-					'param_name' 	=> 'order',
-					'type' 			=> 'dropdown',
-					'heading' 		=> __('Order', 'com.ewereka.our-staff'),
-					'admin_label'	=> false,
-					'value'			=> array_flip(array(
-						'ASC' 	=> 'Ascending',
-						'DESC' 	=> 'Descending',
-					)),
-				)
-			)
-		));
-	}
+                array(
+                    'param_name' 	=> 'order',
+                    'type' 			=> 'dropdown',
+                    'heading' 		=> __('Order', 'com.ewereka.our-staff'),
+                    'admin_label'	=> false,
+                    'value'			=> array_flip(array(
+                        'ASC' 	=> 'Ascending',
+                        'DESC' 	=> 'Descending',
+                    )),
+                )
+            )
+        ));
+    }
 }
